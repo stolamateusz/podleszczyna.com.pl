@@ -1,4 +1,4 @@
-name: 🚀 Automatyczne Wdrożenie na Hostido z Obsługą Gemini
+name: 🚀 Dynamiczny Autodeploy z Obsługą Gemini API
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    name: 🎉 Kompilacja i wysyłka na serwer
+    name: 🎉 Budowanie i wdrożenie na serwer
     runs-on: ubuntu-latest
 
     steps:
@@ -15,42 +15,45 @@ jobs:
       - name: 🚚 Pobieranie najnowszego kodu
         uses: actions/checkout@v4
 
-      # 2. Skonfigurowanie środowiska Node.js (bez cache, aby nie wymagać pliku package-lock.json)
+      # 2. Skonfigurowanie środowiska Node.js (wersja dopasowana do nowoczesnych projektów Vite)
       - name: 🟢 Konfiguracja Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
+          cache: 'npm'
 
-      # 3. Instalacja niezbędnych pakietów (klasyczne npm install, które nie wymaga pliku lock)
-      - name: 📦 Instalacja zależności (npm)
-        run: npm install
+      # 3. Instalacja pakietów z optymalizacją (npm ci lub npm install w razie braku locka)
+      - name: 📦 Instalacja zależności
+        run: npm ci || npm install
 
-      # 4. Budowanie projektu produkcyjnego z wstrzyknięciem kluczy API Gemini
-      - name: 🔨 Budowanie wersji produkcyjnej strony (Vite)
+      # 4. Budowanie wersji produkcyjnej projektu z bezpiecznym wstrzyknięciem kluczy API Gemini
+      - name: 🔨 Budowanie projektu (Vite / React)
         run: npm run build
         env:
           VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-      # 5. Bezpieczna synchronizacja plików przez FTPS bezpośrednio do Hostido
-      - name: 📂 Bezpieczna wysyłka plików przez FTPS
+      # 5. Bezpieczna i szybka synchronizacja plików FTP bezpośrednio do Hostido
+      - name: 📂 Synchronizacja plików przez FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          # Adres Twojego serwera na Hostido
-          server: host248397.hostido.net.pl
+          # Nowo zweryfikowany adres serwera Hostido
+          server: host248397.xce.pl
           
-          # Dane pobierane automatycznie z sekretów repozytorium na GitHubie
+          # Dane pobierane automatycznie z sekretów Twojej organizacji na GitHubie
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           
-          # Folder, w którym Vite zapisuje zbudowaną stronę
+          # Katalog, w którym Vite zapisuje gotowe pliki strony
           local-dir: ./dist/
           
-          # DYNAMICZNY FOLDER DOCELOWY:
-          # GitHub wstawi tu automatycznie nazwę Twojego repozytorium (np. aura-apartments.pl)
+          # Dynamiczna ścieżka docelowa na Twoim serwerze.
           server-dir: domains/${{ github.event.repository.name }}/public_html/
           
-          # Port i bezpieczny protokół szyfrowany
+          # Bezpieczny, szyfrowany protokół FTPS
           protocol: ftps
           port: 21
+
+          # Obejście błędu ECONNRESET (data socket) na serwerach DirectAdmin / Hostido
+          dangerous-disable-tls-session-resumption: true
