@@ -1,6 +1,8 @@
 {
-  "name": "Pod Leszczyną - Pokoje do wynajęcia",
+  "name": "podleszczyna.com.pl",
   "description": "Strona internetowa dla apartamentów i pokoi do wynajęcia 'Pod Leszczyną'.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
